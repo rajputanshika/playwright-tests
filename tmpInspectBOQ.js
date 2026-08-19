@@ -1,0 +1,26 @@
+﻿const { chromium } = require('playwright');
+(async () => {
+  const browser = await chromium.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.goto('https://app-dev.assetinfinity.io/Login');
+  await page.waitForSelector('input[name="company"]', { state: 'visible', timeout: 60000 });
+  await page.fill('input[name="company"]', 'qastaging');
+  await page.click('//button[@type="submit"]');
+  await page.waitForTimeout(2000);
+  await page.click('//h5[@id="asset-infinity-login-button"]');
+  await page.waitForSelector('#loginForm input[name="email"]', { state: 'visible', timeout: 60000 });
+  await page.fill('#loginForm input[name="email"]', 'support@pcsinfinity.in');
+  await page.fill('#loginForm input[name="password"]', 'abc');
+  await page.click('#loginForm button[type="submit"]');
+  await page.waitForLoadState('networkidle');
+  await page.goto('https://app-dev.assetinfinity.io/BillOfQuantities');
+  await page.waitForSelector('.handsontable', { state: 'visible', timeout: 60000 });
+  await page.waitForTimeout(5000);
+  const headerTexts = await page.$$eval('.handsontable th', ths => ths.map(th => th.innerText.trim()));
+  const rowCount = await page.$$eval('.handsontable .htCore tbody tr', rows => rows.length);
+  const firstRowCells = await page.$$eval('.handsontable .htCore tbody tr:first-child td', tds => tds.map((td, i) => ({ index:i, html: td.innerHTML.slice(0,120), classes: td.className })));
+  const dataCells = await page.$$eval('.handsontable .htCore tbody tr:first-child td:not(.htRowHeader):not(.rowHeader)', tds => tds.map((td, i) => ({ index:i, html: td.innerHTML.slice(0,120), classes: td.className })));
+  const hotInputs = await page.$$eval('textarea.handsontableInput', els => els.map((el, i) => ({ index: i, visible: el.offsetParent !== null, outer: el.outerHTML.slice(0,120) })));
+  console.log(JSON.stringify({ headerTexts, rowCount, firstRowCells, dataCells, hotInputs }, null, 2));
+  await browser.close();
+})();

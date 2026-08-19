@@ -8,6 +8,9 @@ export class LoginPage {
     readonly email: Locator;
     readonly password: Locator;
     readonly signInButton: Locator;
+    readonly dashbordHeading: Locator;
+   
+
 
     constructor(Browserpage: Page) {
         this.page = Browserpage;
@@ -16,27 +19,26 @@ export class LoginPage {
         this.clickonLink = Browserpage.locator('//h5[@id="asset-infinity-login-button"]');
         this.email = Browserpage.locator('#loginForm input[name="email"]');
         this.password = Browserpage.locator('#loginForm input[name="password"]');
-        this.signInButton = Browserpage.locator('#loginForm button[type="submit"]');
+        this.signInButton = Browserpage.locator('//button[@id="kt_sign_in_submit"]');
+        this.dashbordHeading = Browserpage.locator('//span[@class="page-heading" and text()= "Activities Completed"]');
+
+       
+
+    }
+    
+    async navigateToLoginPage() {
+        await this.page.goto('/Login', {
+            waitUntil: 'domcontentloaded'});
 
         
-    }
-
-async navigateToLoginPage() {
-    await this.page.goto('https://app-uat.assetinfinity.io/Login', {
-        waitUntil: 'commit',
-        timeout: 60000
-    });
-
-    // Wait for actual login input instead of page load
-    await this.page.locator('//input[@name="company"]').waitFor({
-        state: 'visible',
-        timeout: 60000
-    });
-}
-
+        }
 
 
     async enterOrgName(value: string) {
+        await this.orgname.waitFor({
+            state: 'visible',
+            timeout: 5000
+        });
         await this.orgname.fill(value);
     }
 
@@ -45,20 +47,28 @@ async navigateToLoginPage() {
         await this.saveButton.click();
     }
 
-  async clickLink() {
+    async clickLink() {
         await this.clickonLink.click();
     }
 
 
-     async fillEmail(value: string) {
+    async fillEmail(value: string) {
         await this.email.fill(value);
     }
 
-     async fillPassword(value: string) {
+    async fillPassword(value: string) {
         await this.password.fill(value);
     }
 
-     async signIn() {
+    async signIn() {
         await this.signInButton.click();
     }
+
+   async dashbordforHeading() {
+        await this.dashbordHeading.waitFor({
+            state: 'visible',
+            timeout: 60000
+        });
+    }
+    
 }
